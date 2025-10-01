@@ -19,20 +19,13 @@ func main() {
 
 	// Wrap the file server handler with middleware to increment hits
 	fileServer := http.StripPrefix("/app", http.FileServer(http.Dir(filepathRoot)))
+
+	// Register Handlers
 	mux.Handle("/app/", cfg.middlewareMetricsInc(fileServer))
-
-	// Register /metrics handler
-	mux.HandleFunc("GET /api/metrics", cfg.metricsHandler)
-
-	// Register /reset handler
-	mux.HandleFunc("POST /api/reset", cfg.resetHandler)
-
-	// Readiness endpoint from your previous code
-	mux.HandleFunc("GET /api/healthz", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK\n"))
-	})
+	mux.HandleFunc("GET /admin/metrics", cfg.metricsHandler)
+	mux.HandleFunc("POST /admin/reset", cfg.resetHandler)
+	mux.HandleFunc("GET /api/healthz", healthz)
+	mux.HandleFunc("POST /api/validate_chirp", handlerChirpsValidate)
 
 	server := &http.Server{
 		Addr:    ":" + port,
