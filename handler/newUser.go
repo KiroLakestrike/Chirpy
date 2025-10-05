@@ -1,13 +1,21 @@
 package handler
 
 import (
+	"Chirpy/internal/auth"
+	"Chirpy/internal/database"
 	"encoding/json"
 	"net/http"
 )
 
 func (cfg *ApiConfig) NewUser(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
-		Email string `json:"email"`
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	type CreateUserParams struct {
+		Email           string
+		HashedPasswords string // ← Beachte den Namen!
 	}
 
 	type response struct {
@@ -25,9 +33,20 @@ func (cfg *ApiConfig) NewUser(w http.ResponseWriter, r *http.Request) {
 		RespondWithError(w, http.StatusBadRequest, "Invalid request", err)
 		return
 	}
+	// Hash the password
+	hashed, err := auth.HashPassword(params.Password)
+	if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, "Couldn't hash password", err)
+		return
+	}
+
+	userParams := database.CreateUserParams{
+		Email:           params.Email,
+		HashedPasswords: hashed,
+	}
 
 	// create user in database
-	user, err := cfg.DB.CreateUser(r.Context(), params.Email)
+	user, err := cfg.DB.CreateUser(r.Context(), userParams)
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, "Couldn't create user", err)
 		return

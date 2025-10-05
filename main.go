@@ -13,7 +13,10 @@ import (
 )
 
 func main() {
-	godotenv.Load()
+	err := godotenv.Load()
+	if err != nil {
+		return
+	}
 	dbURL := os.Getenv("DB_URL")
 	platform := os.Getenv("PLATFORM")
 
@@ -26,7 +29,12 @@ func main() {
 		log.Fatal(err)
 	}
 	dbQueries := database.New(db)
-	defer db.Close()
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+
+		}
+	}(db)
 
 	// Create API config
 	cfg := &handler.ApiConfig{
@@ -36,12 +44,11 @@ func main() {
 
 	// Setup routes with configuration
 	routes := server.SetupRoutes(server.RouteConfig{
-		APIConfig:            cfg,
-		FileRoot:             filepathRoot,
-		HelloHandler:         handler.Hello,
-		AboutHandler:         handler.About,
-		HealthzHandler:       handler.Healthz,
-		ValidateChirpHandler: handler.HandlerChirpsValidate,
+		APIConfig:      cfg,
+		FileRoot:       filepathRoot,
+		HelloHandler:   handler.Hello,
+		AboutHandler:   handler.About,
+		HealthzHandler: handler.Healthz,
 	})
 
 	// Create and start server
