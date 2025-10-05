@@ -1,11 +1,11 @@
-package main
+package handler
 
 import (
 	"encoding/json"
 	"net/http"
 )
 
-func handlerChirpsValidate(w http.ResponseWriter, r *http.Request) {
+func HandlerChirpsValidate(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
 		Body string `json:"body"`
 	}
@@ -18,19 +18,19 @@ func handlerChirpsValidate(w http.ResponseWriter, r *http.Request) {
 	params := parameters{}
 	err := decoder.Decode(&params)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Couldn't decode parameters", err)
+		RespondWithError(w, http.StatusInternalServerError, "Couldn't decode parameters", err)
 		return
 	}
 
 	const maxChirpLength = 140
 	if len(params.Body) > maxChirpLength {
-		respondWithError(w, http.StatusBadRequest, "Chirp is too long", nil)
+		RespondWithError(w, http.StatusBadRequest, "Chirp is too long", nil)
 		return
 	}
 
 	badWords := []string{"kerfuffle", "sharbert", "fornax"}
 	cleaned := wordFilter(params.Body, badWords)
-	respondWithJSON(w, http.StatusOK, returnVals{
+	RespondWithJSON(w, http.StatusOK, returnVals{
 		CleanedBody: cleaned,
 		Valid:       true,
 	})

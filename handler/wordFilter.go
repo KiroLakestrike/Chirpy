@@ -1,15 +1,14 @@
-package main
+package handler
 
 import "strings"
 
 func wordFilter(text string, badWords []string) string {
 	words := strings.Split(text, " ")
-	for i, w := range words {
-		lower := strings.ToLower(w)
+	for i, word := range words {
+		lowered := strings.ToLower(word)
 		for _, bad := range badWords {
-			if lower == bad {
+			if lowered == bad {
 				words[i] = "****"
-				break
 			}
 		}
 	}

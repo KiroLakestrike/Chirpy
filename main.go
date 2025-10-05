@@ -1,30 +1,24 @@
 package main
 
 import (
+	"Chirpy/handler"
 	"Chirpy/internal/database"
+	"Chirpy/server"
 	"database/sql"
+	"log"
 	"os"
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
-import (
-	"log"
-	"net/http"
-	"sync/atomic"
-)
-
-type apiConfig struct {
-	fileserverHits atomic.Int32
-	*database.Queries
-}
-
 func main() {
 	godotenv.Load()
 	dbURL := os.Getenv("DB_URL")
+	platform := os.Getenv("PLATFORM")
+
 	const filepathRoot = "."
-	const port = "8080"
+	const port = 8080
 
 	// Open Database Connection
 	db, err := sql.Open("postgres", dbURL)
@@ -34,25 +28,25 @@ func main() {
 	dbQueries := database.New(db)
 	defer db.Close()
 
-	mux := http.NewServeMux()
-	cfg := &apiConfig{}
-	cfg.Queries = dbQueries
-
-	// Wrap the file server handler with middleware to increment hits
-	fileServer := http.StripPrefix("/app", http.FileServer(http.Dir(filepathRoot)))
-
-	// Register Handlers
-	mux.Handle("/app/", cfg.middlewareMetricsInc(fileServer))
-	mux.HandleFunc("GET /admin/metrics", cfg.metricsHandler)
-	mux.HandleFunc("POST /admin/reset", cfg.resetHandler)
-	mux.HandleFunc("GET /api/healthz", healthz)
-	mux.HandleFunc("POST /api/validate_chirp", handlerChirpsValidate)
-
-	server := &http.Server{
-		Addr:    ":" + port,
-		Handler: mux,
+	// Create API config
+	cfg := &handler.ApiConfig{
+		DB:       dbQueries,
+		Platform: platform,
 	}
 
-	log.Printf("Serving files from %s on port %s\n", filepathRoot, port)
-	log.Fatal(server.ListenAndServe())
+	// Setup routes with configuration
+	routes := server.SetupRoutes(server.RouteConfig{
+		APIConfig:            cfg,
+		FileRoot:             filepathRoot,
+		HelloHandler:         handler.Hello,
+		AboutHandler:         handler.About,
+		HealthzHandler:       handler.Healthz,
+		ValidateChirpHandler: handler.HandlerChirpsValidate,
+	})
+
+	// Create and start server
+	srv := server.NewServer(port, routes)
+
+	log.Printf("Serving files from %s on port %d\n", filepathRoot, port)
+	log.Fatal(srv.ListenAndServe())
 }

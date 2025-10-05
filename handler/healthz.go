@@ -1,11 +1,11 @@
-package main
+package handler
 
 import (
 	"net/http"
 )
 
-func healthz(w http.ResponseWriter, r *http.Request) {
+func Healthz(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("OK\n"))
+	w.Write([]byte("OK"))
 }

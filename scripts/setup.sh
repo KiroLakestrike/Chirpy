@@ -5,7 +5,7 @@ echo "Checking prerequisites..."
 command -v go >/dev/null || { echo "Go not found. Install Go first."; exit 1; }
 
 echo "Installing CLI tools and deps..."
-go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+
 
 # App dependencies
 go get github.com/lib/pq
