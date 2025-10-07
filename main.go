@@ -19,6 +19,7 @@ func main() {
 	}
 	dbURL := os.Getenv("DB_URL")
 	platform := os.Getenv("PLATFORM")
+	serverSecret := os.Getenv("SERVER_SECRET")
 
 	const filepathRoot = "."
 	const port = 8080
@@ -38,8 +39,9 @@ func main() {
 
 	// Create API config
 	cfg := &handler.ApiConfig{
-		DB:       dbQueries,
-		Platform: platform,
+		DB:           dbQueries,
+		Platform:     platform,
+		ServerSecret: serverSecret,
 	}
 
 	// Setup routes with configuration

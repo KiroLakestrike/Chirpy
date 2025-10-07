@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"Chirpy/internal/auth"
 	"Chirpy/internal/database"
 	"encoding/json"
 	"net/http"
@@ -11,8 +12,7 @@ import (
 )
 
 type ChirpRequest struct {
-	Body   string    `json:"body"`
-	UserID uuid.UUID `json:"user_id"`
+	Body string `json:"body"`
 }
 
 type ChirpResponse struct {
@@ -25,6 +25,19 @@ type ChirpResponse struct {
 
 // Chirps handles POST /api/chirps
 func (cfg *ApiConfig) Chirps(w http.ResponseWriter, r *http.Request) {
+	// Authenticate user with AccessToken
+	token, err := auth.GetBearerToken(r)
+	if err != nil {
+		RespondWithError(w, http.StatusUnauthorized, "Unauthorized", err)
+		return
+	}
+
+	validated, err := auth.ValidateJWT(token, cfg.ServerSecret)
+	if err != nil {
+		RespondWithError(w, http.StatusUnauthorized, "Unauthorized", err)
+		return
+	}
+
 	// Decode request
 	var req ChirpRequest
 	decoder := json.NewDecoder(r.Body)
@@ -50,7 +63,7 @@ func (cfg *ApiConfig) Chirps(w http.ResponseWriter, r *http.Request) {
 	// Create chirp in database
 	chirp, err := cfg.DB.CreateChirp(r.Context(), database.CreateChirpParams{
 		Body:   cleanedBody,
-		UserID: req.UserID,
+		UserID: validated,
 	})
 
 	if err != nil {
