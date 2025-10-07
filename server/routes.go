@@ -10,8 +10,6 @@ func SetupRoutes(cfg RouteConfig) []Route {
 	fileServer := http.StripPrefix("/app", http.FileServer(http.Dir(cfg.FileRoot)))
 	wrappedFileServer := cfg.APIConfig.MiddlewareMetricsInc(fileServer)
 
-	// ... existing code ...
-
 	routes := []Route{
 		// Static files
 		{Pattern: "/app/", Handler: wrappedFileServer},
@@ -31,9 +29,9 @@ func SetupRoutes(cfg RouteConfig) []Route {
 		{Pattern: "GET /api/chirps", Handler: http.HandlerFunc(cfg.APIConfig.GetAllChirps)},
 		{Pattern: "GET /api/chirps/{id}", Handler: http.HandlerFunc(cfg.APIConfig.GetChirp)},
 		{Pattern: "POST /api/login", Handler: http.HandlerFunc(cfg.APIConfig.Login)},
+		{Pattern: "POST /api/refresh", Handler: http.HandlerFunc(cfg.APIConfig.RefreshToken)},
+		{Pattern: "POST /api/revoke", Handler: http.HandlerFunc(cfg.APIConfig.RevokeToken)},
 	}
-
-	// ... existing code ...
 
 	return routes
 }
@@ -49,6 +47,8 @@ type RouteConfig struct {
 		GetAllChirps(w http.ResponseWriter, r *http.Request)
 		GetChirp(w http.ResponseWriter, r *http.Request)
 		Login(w http.ResponseWriter, r *http.Request)
+		RefreshToken(w http.ResponseWriter, r *http.Request)
+		RevokeToken(w http.ResponseWriter, r *http.Request)
 	}
 	FileRoot       string
 	HelloHandler   http.HandlerFunc

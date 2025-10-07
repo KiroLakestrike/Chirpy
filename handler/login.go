@@ -21,7 +21,7 @@ func (cfg *ApiConfig) Login(w http.ResponseWriter, r *http.Request) {
 		CreatedAt    string `json:"created_at"`
 		UpdatedAt    string `json:"updated_at"`
 		Email        string `json:"email"`
-		AccessToken  string `json:"access_token"`
+		Token        string `json:"token"`
 		RefreshToken string `json:"refresh_token"`
 	}
 
@@ -90,7 +90,7 @@ func (cfg *ApiConfig) Login(w http.ResponseWriter, r *http.Request) {
 		CreatedAt:    user.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
 		UpdatedAt:    user.UpdatedAt.Format("2006-01-02T15:04:05Z07:00"),
 		Email:        user.Email,
-		AccessToken:  accessToken,
+		Token:        accessToken,
 		RefreshToken: refreshToken,
 	})
 }
