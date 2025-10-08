@@ -2,7 +2,6 @@ package auth
 
 import (
 	"errors"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -10,7 +9,6 @@ import (
 func GetBearerToken(r *http.Request) (string, error) {
 	// get the Bearer information from the http header
 	authHeader := r.Header.Get("Authorization")
-	log.Printf("DEBUG GetBearerToken: Authorization header = '%s'", authHeader)
 
 	if authHeader == "" {
 		return "", errors.New("authorization header not found")
@@ -22,7 +20,6 @@ func GetBearerToken(r *http.Request) (string, error) {
 
 	token := strings.TrimPrefix(authHeader, "Bearer ")
 	token = strings.TrimSpace(token)
-	log.Printf("DEBUG GetBearerToken: Extracted token = '%s'", token)
 
 	if token == "" {
 		return "", errors.New("authorization header bearer token not found")

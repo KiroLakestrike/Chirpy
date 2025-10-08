@@ -15,7 +15,7 @@ func (cfg *ApiConfig) NewUser(w http.ResponseWriter, r *http.Request) {
 
 	type CreateUserParams struct {
 		Email           string
-		HashedPasswords string // ← Beachte den Namen!
+		HashedPasswords string
 	}
 
 	type response struct {
