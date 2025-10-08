@@ -19,10 +19,11 @@ func (cfg *ApiConfig) NewUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type response struct {
-		ID        string `json:"id"`
-		CreatedAt string `json:"created_at"`
-		UpdatedAt string `json:"updated_at"`
-		Email     string `json:"email"`
+		ID          string `json:"id"`
+		CreatedAt   string `json:"created_at"`
+		UpdatedAt   string `json:"updated_at"`
+		Email       string `json:"email"`
+		IsChirpyRed bool   `json:"is_chirpy_red"`
 	}
 
 	// Decode the request body
@@ -54,9 +55,10 @@ func (cfg *ApiConfig) NewUser(w http.ResponseWriter, r *http.Request) {
 
 	// Return the user with 201 Created status
 	RespondWithJSON(w, http.StatusCreated, response{
-		ID:        user.ID.String(),
-		CreatedAt: user.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
-		UpdatedAt: user.UpdatedAt.Format("2006-01-02T15:04:05Z07:00"),
-		Email:     user.Email,
+		ID:          user.ID.String(),
+		CreatedAt:   user.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
+		UpdatedAt:   user.UpdatedAt.Format("2006-01-02T15:04:05Z07:00"),
+		Email:       user.Email,
+		IsChirpyRed: user.IsChirpyRed,
 	})
 }

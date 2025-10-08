@@ -20,6 +20,7 @@ func main() {
 	dbURL := os.Getenv("DB_URL")
 	platform := os.Getenv("PLATFORM")
 	serverSecret := os.Getenv("SERVER_SECRET")
+	polkaKey := os.Getenv("POLKA_KEY")
 
 	const filepathRoot = "."
 	const port = 8080
@@ -42,6 +43,7 @@ func main() {
 		DB:           dbQueries,
 		Platform:     platform,
 		ServerSecret: serverSecret,
+		PolkaKey:     polkaKey,
 	}
 
 	// Setup routes with configuration

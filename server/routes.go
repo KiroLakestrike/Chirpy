@@ -33,6 +33,9 @@ func SetupRoutes(cfg RouteConfig) []Route {
 		{Pattern: "POST /api/refresh", Handler: http.HandlerFunc(cfg.APIConfig.RefreshToken)},
 		{Pattern: "POST /api/revoke", Handler: http.HandlerFunc(cfg.APIConfig.RevokeToken)},
 		{Pattern: "PUT /api/users", Handler: http.HandlerFunc(cfg.APIConfig.UpdateUser)},
+
+		// webhooks
+		{Pattern: "POST /api/polka/webhooks", Handler: http.HandlerFunc(cfg.APIConfig.ApplyChirpyRed)},
 	}
 
 	return routes
@@ -53,6 +56,7 @@ type RouteConfig struct {
 		RevokeToken(w http.ResponseWriter, r *http.Request)
 		UpdateUser(w http.ResponseWriter, r *http.Request)
 		DeleteChirpByID(w http.ResponseWriter, r *http.Request)
+		ApplyChirpyRed(w http.ResponseWriter, r *http.Request)
 	}
 	FileRoot       string
 	HelloHandler   http.HandlerFunc
